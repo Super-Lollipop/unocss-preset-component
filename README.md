@@ -41,7 +41,7 @@ postcss plugins (do not support async plugin)
 ## NOTE
 
 Some special prefixes(e.g 'link-', 'file-') may conflict with variants in presetMini().
-To avoid conflicts, add '_' as prefix (e.g 'link-' to '_link-')
+To avoid conflicts, it will be automatically added '_' as prefix (e.g 'link-' to '_link-')
 
 ## License
 
