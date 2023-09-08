@@ -1,4 +1,4 @@
-import type { AcceptedPlugin, ChildNode, Root } from 'postcss'
+import type { AcceptedPlugin, ChildNode, Declaration, Root } from 'postcss'
 import postcss from 'postcss'
 import type { CssInJs } from 'postcss-js'
 import { parse as cssInJsParser } from 'postcss-js'
@@ -31,23 +31,19 @@ const selectorParser = _selectorParser((selector) => {
     if (node.value === ':not')
       node.remove()
   })
+  const candidates = []
   const selectorNodes = selector.nodes[0].nodes
-  // for (const selectorNode of selectorNodes) {
-  for (let i = selectorNodes.length - 1; i >= 0; i--) {
-    const selectorNode = selectorNodes[i]
+  for (const selectorNode of selectorNodes) {
     if (selectorNode.type === 'class')
-      return [selectorNode.value]
+      candidates.push(selectorNode.value)
     // nested pseudo e.g :where(.foo .bar) :is(.foo .bar)
     if (selectorNode.type === 'pseudo' && selectorNode.nodes && selectorNode.nodes.length) {
-      const candidates: string[] = []
       selectorNode.walkClasses((classNode) => {
         candidates.push(classNode.value)
       })
-      if (candidates.length)
-        return candidates
     }
   }
-  return []
+  return candidates
 })
 
 function extractCandidates(selector: string) {
@@ -56,10 +52,6 @@ function extractCandidates(selector: string) {
 
 function parseRule(rule: ChildNode): ParsedRule[] {
   if (rule.type === 'rule') {
-    const cssEntries: CSSEntries = []
-    rule.walkDecls((decl) => {
-      cssEntries.push([decl.prop, decl.value])
-    })
     return rule.selectors.map((selector) => {
       const candidates = extractCandidates(selector).map((candidate) => {
         if (conflicts.some(conflict => candidate.startsWith(conflict))) {
@@ -68,7 +60,7 @@ function parseRule(rule: ChildNode): ParsedRule[] {
         }
         return candidate
       })
-      return [candidates, selector, cssEntries, []]
+      return [candidates, selector, (rule.nodes as Declaration[]).map(decl => [decl.prop, decl.value]), []]
     })
   }
   else if (rule.type === 'atrule' && ['supports', 'media'].includes(rule.name)) {
@@ -92,10 +84,6 @@ function genComponentPreset(option: ComponentOption): ComponentPreset {
   const rules: Rule[] = []
   const shortcuts: Map<string, string[]> = new Map()
   const preflights: Preflight[] = []
-  const ruleMeta: RuleMeta = {
-    layer,
-    internal: true,
-  }
   parseStyles(style, postcssPlugins ?? [])
     .flatMap(parseRule)
     .forEach(([candidates, selector, cssbody, parents]) => {
@@ -111,7 +99,17 @@ function genComponentPreset(option: ComponentOption): ComponentPreset {
         })
       }
       const ruleName = randomString()
-      rules.push([ruleName, cssbody as CSSEntries, ruleMeta])
+      rules.push([
+        ruleName,
+        cssbody as CSSEntries,
+        {
+          layer,
+          internal: true,
+          // e.g .range::-moz-range-track,.range::-webkit-slider-runnable-track {decl...}
+          // if merged, css may not take effect
+          noMerge: selector.includes('::-'),
+        },
+      ])
       candidates.forEach((candidate) => {
         const shortcutProps = shortcuts.get(candidate) ?? []
         shortcutProps.push(`${parents.length ? `${parents.reverse().map(([name, params]) => `[@${name}${formatSelector(params)}]`).join(':')}:` : ''}selector-[${formatSelector(selector)}]:${ruleName}`)
@@ -127,7 +125,7 @@ function genComponentPreset(option: ComponentOption): ComponentPreset {
           if (rawSelector === currentSelector)
             return shortcutProps
           else
-            return shortcutProps.map(prop => prop.replaceAll(`.${formatSelector(shortcutName)}`, toEscapedSelector(formatSelector(rawSelector))))
+            return shortcutProps.map(prop => prop.replaceAll(new RegExp(`(\\.${shortcutName.replaceAll('_', String.raw`\\_`)})(?![-\\w])?`, 'g'), toEscapedSelector(formatSelector(rawSelector))))
         },
         { layer },
       ] as Shortcut),
