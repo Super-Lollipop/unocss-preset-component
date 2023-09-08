@@ -1,0 +1,193 @@
+.switch {
+  --switch-min-w: 2.75rem;
+  --switch-height: 1.375rem;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  overflow: hidden;
+  border-radius: 9999px;
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1.375rem;
+  color: rgba(255, 255, 255, 1);
+
+  &-input {
+
+    &:checked {
+      &~.switch-inner {
+        background-color: rgba(59, 130, 246, 1);
+      }
+
+      &~.switch-handle {
+        inset-inline-start: calc(100% - var(--switch-height));
+      }
+    }
+
+    &:disabled {
+      &~span {
+        cursor: not-allowed;
+      }
+
+      &:not(:checked)~.switch-inner {
+        background-color: rgba(107, 114, 128, 0.75);
+      }
+
+      &:checked~.switch-inner {
+        background-color: rgba(96, 165, 250, 1);
+      }
+    }
+
+    display:none
+  }
+
+  &-inner {
+    transition-property: background-color, opacity;
+    transition-duration: 200ms;
+    transition-timing-function: ease-in-out;
+    box-sizing: border-box;
+    display: block;
+    min-width: var(--switch-min-w);
+    height: var(--switch-height);
+    background-color: rgba(156, 163, 175, 0.7);
+  }
+
+  &-handle {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .26);
+    transition-property: inset-inline-start;
+    transition-duration: 200ms;
+    transition-timing-function: ease-in-out;
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    bottom: 0;
+    margin: calc(var(--switch-height) * 0.125);
+    display: block;
+    width: calc(var(--switch-height) * 0.75);
+    height: calc(var(--switch-height) * 0.75);
+    border-radius: 9999px;
+    background-color: rgba(255, 255, 255, 1);
+  }
+
+  &:hover .switch-input {
+    &:checked:not(:disabled)~.switch-inner {
+      background-color: rgba(96, 165, 250, 1);
+    }
+
+    &:not(:disabled, :checked)~.switch-inner {
+      background-color: rgba(107, 114, 128, 0.75);
+    }
+  }
+
+  &:active .switch-input:not(:disabled)~.switch-handle {
+    transform: scale(1.1);
+  }
+
+  &-lg {
+    --switch-min-w: 3.5rem;
+    --switch-height: 1.75rem;
+  }
+
+  &-sm {
+    --switch-min-w: 2.25rem;
+    --switch-height: 1.25rem;
+  }
+
+  &-xs {
+    --switch-min-w: 1.75rem;
+    --switch-height: 1rem;
+  }
+
+  &-text {
+    --switch-min-w: 2.75rem;
+    --switch-height: 1.375rem;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+    overflow: hidden;
+    border-radius: 9999px;
+    text-align: center;
+    font-size: 0.75rem;
+    line-height: 1.375rem;
+    color: rgba(255, 255, 255, 1);
+
+    & .switch-inner {
+      padding-inline-start: var(--switch-height);
+      padding-inline-end: calc(var(--switch-height) * 0.25);
+      transition-property: background-color, opacity, padding-inline-start, padding-inline-end;
+      transition-duration: 200ms;
+      transition-timing-function: ease-in-out;
+
+      &>span {
+        transition-property: margin-inline-start, margin-inline-end;
+        transition-duration: 200ms;
+        transition-timing-function: ease-in-out;
+        display: block;
+      }
+
+      & :nth-child(1) {
+        margin-inline-start: calc(-100% - var(--switch-height));
+        margin-inline-end: calc(100% + var(--switch-height));
+      }
+
+      & :nth-child(2) {
+        margin-top: calc(var(--switch-height) * -1);
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+      }
+    }
+
+    & .switch-input:checked~.switch-inner {
+      padding-inline-start: calc(var(--switch-height) * 0.25);
+      padding-inline-end: var(--switch-height);
+
+      & :nth-child(1) {
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+      }
+
+      & :nth-child(2) {
+        margin-inline-start: calc(100% + var(--switch-height));
+        margin-inline-end: calc(-100% - var(--switch-height));
+      }
+    }
+
+    &:hover .switch-input {
+      &:checked:not(:disabled)~.switch-inner {
+        background-color: rgba(96, 165, 250, 1);
+      }
+
+      &:not(:disabled, :checked)~.switch-inner {
+        background-color: rgba(107, 114, 128, 0.75);
+      }
+    }
+
+    &:active .switch-input:not(:disabled)~.switch-handle {
+      transform: scale(1.1);
+    }
+
+    &.switch-text-lg {
+      --switch-min-w: 3.5rem;
+      --switch-height: 1.75rem;
+      font-size: 1rem;
+      line-height: 1.75rem;
+    }
+
+    &.switch-text-sm {
+      --switch-min-w: 2.25rem;
+      --switch-height: 1.25rem;
+      font-size: 0.75rem;
+      line-height: 1.25rem;
+    }
+
+    &.switch-text-xs {
+      --switch-min-w: 1.75rem;
+      --switch-height: 1rem;
+      font-size: 0.75rem;
+      line-height: 1rem;
+    }
+  }
+}
