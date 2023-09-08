@@ -44,6 +44,10 @@ Some special prefixes(e.g 'link-', 'file-') may conflict with variants in preset
 
 To avoid conflicts, it will be automatically added '_' as prefix (e.g 'link-' to '_link-')
 
+## Example
+
+- [unocss-preset-daisyui](https://github.com/Super-Lollipop/unocss-preset-daisyui)
+
 ## License
 
 MIT License
