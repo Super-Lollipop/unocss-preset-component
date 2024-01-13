@@ -90,7 +90,7 @@ function genComponentPreset(option: ComponentOption): ComponentPreset {
       if (!candidates.length) {
         preflights.push({
           getCSS: () =>
-            (parents.length ? `${parents.reverse().map(([name, params]) => `@${name} ${(params)}`).join('{')}{` : '')
+            (parents.length ? `${Array.from(parents).reverse().map(([name, params]) => `@${name} ${(params)}`).join('{')}{` : '')
                 + (selector ? `${selector}{` : '')
                 + entriesToCss(cssbody)
                 + (selector ? '}' : '')
